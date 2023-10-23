@@ -8,12 +8,13 @@ from dataloader import plot
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+from evaluation import Evaluation
 def main():
     loss = []
     # 1. prepare dataset
     precon = 6
     filepath = "data/data.csv"
-    hidden = 6
+    hidden = 10
 
     train_loader = train_data_prepare(filepath=filepath) # train_loader 里面都是Tensor
     test_loader = test_data_prepare(filepath=filepath)
@@ -23,9 +24,8 @@ def main():
     t0 = time.time()
     model = LSTM_Regression(precon,hidden_size=hidden)
     
-    criterion = torch.nn.MSELoss(size_average=False)
-
-    optimizer = torch.optim.Adam(model.parameters(), lr = 1e-2)
+    criterion = Evaluation(model,1e-2).criterion
+    optimizer = Evaluation(model,1e-2).optimizer
 
     for epoch in range(1000):
         epoch_loss = []
@@ -43,11 +43,11 @@ def main():
             optimizer.step() # 更新参数
             if (i+1) % 1 ==0:
                 print('Epoch: {},Batch: {} Loss:{:.5f}'.format((epoch+1),(i+1),train_loss.item()))
-            if train_loss < 7:
+            if train_loss < 10:
                 break
         # print(epoch_loss)
         loss += epoch_loss #loss是一个list
-        if np.min(epoch_loss) < 7:
+        if np.min(epoch_loss) <10:
             break
     
 
